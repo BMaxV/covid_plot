@@ -1,6 +1,6 @@
 # covid_plot
 
-Plot the data from john hopkins 
+Plot the data from johns hopkins 
 
 https://github.com/CSSEGISandData/COVID-19
 
