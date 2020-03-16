@@ -79,6 +79,9 @@ def main():
     all_data=new_dict
     keys=list(all_data.keys())
     keys.sort()
+    
+    fig, ax = plt.subplots()
+    
     for my_stat in ["Confirmed","Deaths"]:
         values=[]
         dates=[]
@@ -100,7 +103,12 @@ def main():
         plt.plot(dates,values,label=my_stat)
     plt.legend()
     plt.title(my_country)
-    if False:
+    
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    plt.grid()
+    
+    if True:
         os.chdir(old_dir)
         plt.savefig("plot.svg")
     else:
