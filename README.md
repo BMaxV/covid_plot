@@ -4,4 +4,4 @@ Plot the data from john hopkins with python. Main point is that this reads and c
 
 for example here is Germany, today:
 
-![smarttexthere]https://github.com/BMaxV/covid_plot/plot.svg)
+![smarttexthere](https://github.com/BMaxV/covid_plot/blob/master/plot.svg)
