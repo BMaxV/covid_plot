@@ -2,8 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import datetime
 
-def main():
-    old_dir=os.getcwd()
+def read_data():
     
     os.chdir("../COVID-19/csse_covid_19_data/csse_covid_19_daily_reports")
     ls=os.scandir()
@@ -60,13 +59,12 @@ def main():
                     col_c+=1
                     found_c+=1
                     c+=1
-                    
+    return all_data
+
+def date_cleanup(all_data):
+    new_dict={}
     keys=list(all_data.keys())
     keys.sort()
-    dates=[]
-    values=[]
-    new_dict={}
-    
     #thanks for imperial dates you... ;)
     for date in keys:
         plot_date=date.split("-")
@@ -74,9 +72,15 @@ def main():
         plot_date=datetime.date(month=plot_date[0],day=plot_date[1],year=plot_date[2])
         new_dict[plot_date]=all_data[date]
     
-    my_country="Germany"
-        
     all_data=new_dict
+    return all_data
+
+
+def plot(all_data,my_country="Germany",my_keys=["Confirmed"]):
+    dates=[]
+    values=[]
+    my_country="Germany"
+    
     keys=list(all_data.keys())
     keys.sort()
     
@@ -92,7 +96,6 @@ def main():
             val=0
             for country in data_on_date:
                 if country==my_country:
-                    
                     for province in data_on_date[country]:
                         if my_stat in data_on_date[country][province]:
                             val+=data_on_date[country][province][my_stat]
@@ -108,14 +111,19 @@ def main():
     fig.tight_layout()
     plt.grid()
     
-    if True:
-        os.chdir(old_dir)
+    if False:
         plt.savefig("plot.svg")
     else:
         plt.show()
+
+def main():
+    old_dir=os.getcwd()
+    all_data=read_data()
+    os.chdir(old_dir)
     
-                
-    
+    all_data=date_cleanup(all_data)
+    plot(all_data,my_country="Germany",my_keys=["Confirmed"])
+
 
 if __name__=="__main__":
     main()
