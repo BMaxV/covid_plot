@@ -93,6 +93,8 @@ def plot(all_data, my_country="Germany", my_keys=["Confirmed","Deahts"]):
     for my_stat in my_keys:
         values = []
         dates = []
+        diff_values=[]
+        last_value=0
         for date in keys:
             if date not in dates:
                 dates.append(date)
@@ -105,9 +107,13 @@ def plot(all_data, my_country="Germany", my_keys=["Confirmed","Deahts"]):
                             val += data_on_date[country][province][my_stat]
                         else:
                             val += 0
-
+            diff_values.append(val-last_value)
             values.append(val)
+            last_value=val
+            
+        
         plt.plot(dates, values, label=my_stat)
+        plt.plot(dates,diff_values, label="diff "+my_stat)
     plt.legend()
     plt.title(my_country)
 
@@ -115,7 +121,7 @@ def plot(all_data, my_country="Germany", my_keys=["Confirmed","Deahts"]):
     fig.tight_layout()
     plt.grid()
 
-    if False:
+    if True:
         plt.savefig("plot.svg")
     else:
         plt.show()
