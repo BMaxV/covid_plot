@@ -81,7 +81,7 @@ def date_cleanup(all_data):
     return all_data
 
 
-def plot(all_data, my_country="Germany", my_keys=["Confirmed","Deahts"]):
+def plot(all_data, my_country="Germany", my_keys=["Confirmed","Deahts"],last_x_days=None):
     dates = []
     values = []
 
@@ -110,8 +110,10 @@ def plot(all_data, my_country="Germany", my_keys=["Confirmed","Deahts"]):
             diff_values.append(val-last_value)
             values.append(val)
             last_value=val
-            
-        
+        if last_x_days!=None:
+            dates=dates[-last_x_days:]
+            values=values[-last_x_days:]
+            diff_values=diff_values[-last_x_days:]
         plt.plot(dates, values, label=my_stat)
         plt.plot(dates,diff_values, label="diff "+my_stat)
     plt.legend()
@@ -133,7 +135,9 @@ def main():
     os.chdir(old_dir)
 
     all_data = date_cleanup(all_data)
-    plot(all_data, my_country="Germany", my_keys=["Confirmed"])
+    plot(all_data,
+        my_country="Italy",
+        my_keys=["Confirmed","Deaths"],last_x_days=40)
 
 
 if __name__ == "__main__":
