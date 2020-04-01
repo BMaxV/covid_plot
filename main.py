@@ -2,6 +2,71 @@ import os
 import matplotlib.pyplot as plt
 import datetime
 
+def read_data2():
+    os.chdir("../COVID-19/csse_covid_19_data/csse_covid_19_time_series/")
+    with open("time_series_covid19_confirmed_global.csv","r") as f:
+        t=f.read()
+    t=t.split("\n")
+    columns=t.pop(0)
+    #print(columns)
+    columns=columns.split(",")
+    dates=columns[4:]
+    #print(dates)
+    new_dates=[]
+    for x in dates:
+        xi=x.split("/")
+        date=datetime.date(day=int(xi[1]),month=int(xi[0]),year=2020)
+        new_dates.append(date)
+    data_d={}
+    data_d["dates"]=new_dates
+    for x in t:
+        #print(x)
+        x=x.split(",")
+        if len(x)<3:
+            break
+        province=x[0]
+        country=x[1]
+        if country not in data_d:
+            data_d[country]={}
+        if province!='':
+            data_d[country][province]={}
+            local_d=data_d[country][province]
+        else:
+            local_d=data_d[country]
+        y=x[4:]
+        yn=[]
+        for yi in y:
+            yn.append(float(yi))
+        local_d["values"]=yn
+        
+    return data_d
+
+
+    
+def plot2(data_d,my_country,last_x_days=40):
+    
+    dates=data_d["dates"]
+    values=data_d[my_country]["values"]
+    new_dates=dates[-last_x_days:]
+    yn=values[-last_x_days:]
+    diffs=[]
+    last=0
+    for x in yn:
+        diffs.append(x-last)
+        last=x
+        
+    fig, ax = plt.subplots()
+    plt.plot(new_dates,yn,label="total")
+    plt.plot(new_dates,diffs,label="diffs")
+    plt.legend()
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    plt.grid()
+    plt.show()
+        
+def main2():
+    data_d=read_data2()
+    plot2(data_d,"Germany")
 
 def read_data():
 
@@ -141,4 +206,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    #main()
+    main2()#read_data2()
