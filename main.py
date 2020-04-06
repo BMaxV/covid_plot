@@ -1,4 +1,5 @@
 import os
+import matplotlib
 import matplotlib.pyplot as plt
 import datetime
 
@@ -91,9 +92,9 @@ def plot2(data_d,my_country,last_x_days=40):
     #plt.plot(new_dates,three_week_averages,label="three week avg diffs")
     plt.legend()
     
-    #plt.yticks()
-    #extraticks=[three_week_avg,two_week_avg]
-    #plt.yticks(list(plt.yticks()[0]) + extraticks)
+   
+    extraticks=[matplotlib.dates.date2num(new_dates[-1])]
+    plt.xticks(list(plt.xticks()[0]) + extraticks)
     
     fig.autofmt_xdate()
     plt.title(my_country)
@@ -117,6 +118,49 @@ def plot2(data_d,my_country,last_x_days=40):
     #plt.yticks()
     #extraticks=[three_week_avg,two_week_avg]
     #plt.yticks(list(plt.yticks()[0]) + extraticks)
+    my_ticks=plt.xticks()
+    my_ticks=list(my_ticks[0])
+    
+    
+    
+    interesting_ts=[]
+    c=21
+    while c < last_x_days:
+        interesting_ts.append(-c)
+        c+=7
+    real_interesting_ts=[]
+    labels=[]
+    for x in interesting_ts:
+        real_interesting_ts.append(matplotlib.dates.date2num(new_dates[x]))
+        labels.append(str(new_dates[x]))
+    
+    #t_b=matplotlib.dates.date2num(datetime.date(day=23,month=3,year=2020))
+    #real_interesting_ts.append(t_b)
+    #labels.append("start of measures")
+    
+    t1=matplotlib.dates.date2num(new_dates[-14])
+    real_interesting_ts.append(t1)
+    labels.append("max inc 14d")
+    
+    t2=matplotlib.dates.date2num(new_dates[-6])
+    real_interesting_ts.append(t2)
+    labels.append("avg inc 6d")
+    
+    t3=matplotlib.dates.date2num(new_dates[-1])
+    real_interesting_ts.append(t3)
+    labels.append("today, "+str(new_dates[-1]))
+    
+    a=real_interesting_ts
+    b=labels
+    
+    
+    
+    #a=list(plt.xticks()[0]) + extraticks
+    
+    #b=list(plt.xticks()[1])# + extralabels
+    #b=[
+    
+    plt.xticks(a,b)
     
     fig.autofmt_xdate()
     plt.title(my_country)
