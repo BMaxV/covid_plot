@@ -10,10 +10,10 @@ def read_data2():
         t=f.read()
     t=t.split("\n")
     columns=t.pop(0)
-    #print(columns)
+    
     columns=columns.split(",")
     dates=columns[4:]
-    #print(dates)
+    
     new_dates=[]
     for x in dates:
         xi=x.split("/")
@@ -22,7 +22,7 @@ def read_data2():
     data_d={}
     data_d["dates"]=new_dates
     for x in t:
-        #print(x)
+        
         x=x.split(",")
         if len(x)<3:
             break
@@ -47,81 +47,66 @@ def averages(diffs,last_x_days,days=14):
     averages=[]
     c=1
     while c < last_x_days+1:
-        avg=sum(diffs[-c-days:-c])/days
+        sub_sum=sum(diffs[-c-days:-c])
+        avg=sub_sum/days
         averages.append(avg)
         c+=1
     #going backwards, so we need to reverse for plot
     averages.reverse()
     return averages
-    
-def plot2(data_d,my_country,last_x_days=40):
-    
-    dates=data_d["dates"]
-    values=data_d[my_country]["values"]
-    
-    
-    
-    
-    diffs=[]
-    last=0
-    for x in values:
-        diffs.append(x-last)
-        last=x
-    
-    one_week_averages=averages(diffs,last_x_days,7)
-    two_week_averages=averages(diffs,last_x_days,14)
-    three_week_averages=averages(diffs,last_x_days,21)
-    
-    new_dates=dates[-last_x_days:]
-    yn=values[-last_x_days:]
-    diffs=diffs[-last_x_days:]
-    
-    one_week_averages=one_week_averages[-last_x_days:]
-    two_week_averages=two_week_averages[-last_x_days:]
-    three_week_averages=three_week_averages[-last_x_days:]
-    #three_week_avg=sum(diffs[-20:])/len(diffs[-20:])
-    #two_week_avg=sum(diffs[-13:])/len(diffs[-13:])
-    
+
+def plot21(new_dates,yn,diffs,my_country,save):
     
     fig, ax = plt.subplots()
     plt.plot(new_dates,yn,label="total")
     plt.plot(new_dates,diffs,label="diffs")
-    #plt.plot([new_dates[0],new_dates[-1]],[three_week_avg,three_week_avg],label="three week avg diffs")
-    #plt.plot(new_dates,one_week_averages,label="one week avg diffs")
-    #plt.plot(new_dates,two_week_averages,label="two week avg diffs")
-    #plt.plot(new_dates,three_week_averages,label="three week avg diffs")
     plt.legend()
     
-   
     extraticks=[matplotlib.dates.date2num(new_dates[-1])]
     plt.xticks(list(plt.xticks()[0]) + extraticks)
     
     fig.autofmt_xdate()
-    plt.title(my_country)
+    plt.title("Cases in "+my_country)
     fig.tight_layout()
     plt.grid()
     
-    if True:
+    if save:
         plt.savefig(my_country+"plot.svg")
     else:
         plt.show()
+
+def calculate_averages(diffs,last_x_days):
+    one_week_averages=averages(diffs,last_x_days,7)
+    two_week_averages=averages(diffs,last_x_days,14)
+    three_week_averages=averages(diffs,last_x_days,21)
     
+    one_week_averages=one_week_averages[-last_x_days:]
+    two_week_averages=two_week_averages[-last_x_days:]
+    three_week_averages=three_week_averages[-last_x_days:]
+    
+    return one_week_averages,two_week_averages,three_week_averages
+
+def plot22(new_dates,all_averages,diffs,my_country,last_x_days,save):
+    
+    [one_week_averages,two_week_averages,three_week_averages]=all_averages
+        
     fig, ax = plt.subplots()
     #plt.plot(new_dates,yn,label="total")
-    plt.plot(new_dates,diffs,label="diffs")
+    main_dates=new_dates[-last_x_days:]
+    plt.plot(main_dates,diffs,label="diffs")
     #plt.plot([new_dates[0],new_dates[-1]],[three_week_avg,three_week_avg],label="three week avg diffs")
-    plt.plot(new_dates,one_week_averages,label="one week avg diffs")
-    plt.plot(new_dates,two_week_averages,label="two week avg diffs")
-    plt.plot(new_dates,three_week_averages,label="three week avg diffs")
+    
+    #modify the dates a bit so they're more accurately displayed
+    new_d_w1=new_dates[-last_x_days-3:-3]
+    new_d_w2=new_dates[-last_x_days-7:-7]
+    new_d_w3=new_dates[-last_x_days-10:-10]
+    plt.plot(new_d_w1,one_week_averages,label="one week avg diffs")
+    plt.plot(new_d_w2,two_week_averages,label="two week avg diffs")
+    plt.plot(new_d_w3,three_week_averages,label="three week avg diffs")
     plt.legend()
     
-    #plt.yticks()
-    #extraticks=[three_week_avg,two_week_avg]
-    #plt.yticks(list(plt.yticks()[0]) + extraticks)
     my_ticks=plt.xticks()
     my_ticks=list(my_ticks[0])
-    
-    
     
     interesting_ts=[]
     c=21
@@ -152,31 +137,91 @@ def plot2(data_d,my_country,last_x_days=40):
     
     a=real_interesting_ts
     b=labels
-    
-    
-    
-    #a=list(plt.xticks()[0]) + extraticks
-    
-    #b=list(plt.xticks()[1])# + extralabels
-    #b=[
-    
+        
     plt.xticks(a,b)
     
     fig.autofmt_xdate()
-    plt.title(my_country)
+    plt.title(my_country+" diffs")
     fig.tight_layout()
     plt.grid()
     
-    if True:
+    if save:
         plt.savefig(my_country+"plot_diffs.svg")
     else:
         plt.show()
-        
-def main2(last_x_days=40):
-    data_d=read_data2()
-    plot2(data_d,"Germany",last_x_days=last_x_days)
-    plot2(data_d,"Italy",last_x_days=last_x_days)
 
+def calculate_diffs(values):
+    diffs=[]
+    last=0
+    for x in values:
+        diffs.append(x-last)
+        last=x
+    return diffs
+    
+def plot2(data_d,my_country,last_x_days=40,save=True):
+    
+    dates=data_d["dates"]
+    values=data_d[my_country]["values"]
+    diffs=calculate_diffs(values)
+    
+    #a bit ugly, side effect wise
+    data_d[my_country]["diffs"]=diffs
+    
+    trimmed_dates1=dates[-last_x_days:]
+    trimmed_dates2=dates#[-last_x_days:]
+    trimmed_values=values[-last_x_days:]
+    
+    all_averages=calculate_averages(diffs,last_x_days)
+    diffs=diffs[-last_x_days:]
+    
+    #also writing averages to data_d
+    data_d[my_country]["all_averages"]=all_averages
+    
+    plot21(trimmed_dates1,trimmed_values,diffs,my_country,save)
+    plot22(trimmed_dates2,all_averages,diffs,my_country,last_x_days,save)
+    
+
+def plot3(data_d,country_list,last_x_days,save=True):
+    
+    dates=data_d["dates"]
+    trimmed_dates=dates[-last_x_days:]
+    
+    c=0
+    while c < 3:
+        fig, ax = plt.subplots()
+        for my_country in country_list:
+            diffs=data_d[my_country]["diffs"]
+            trimmed_diffs=diffs[-last_x_days:]
+            all_averages=data_d[my_country]["all_averages"]
+            #plt.plot(trimmed_dates,trimmed_diffs,label=my_country+" diffs")
+            
+            avgs=all_averages[c]
+            trimmed_avgs=avgs[-last_x_days:]
+            plt.plot(trimmed_dates,avgs,label=my_country)
+        
+        plt.xticks(list(plt.xticks()[0])+[matplotlib.dates.date2num(dates[-1])])
+        plt.legend()
+        plt.grid()
+        plt.title("country diffs compared"+" "+str((c+1)*7)+"d avg")
+        fig.autofmt_xdate()
+        
+        if save:
+            plt.savefig("countries_compared"+str((c+1)*7)+"d_avg.svg")
+        else:
+            plt.show()
+        c+=1
+
+def main2(last_x_days=80):
+    data_d=read_data2()
+    
+    country_list=["Germany","Italy","India","Iran","Sweden","United Kingdom"]
+    #side effect, plot writes diffs to data_d
+    for x in country_list:
+        plot2(data_d,x,last_x_days=last_x_days)
+   
+    #which is why they're available here
+    plot3(data_d,country_list,last_x_days=last_x_days)
+    
 def read_data():
 
     os.chdir("../COVID-19/csse_covid_19_data/csse_covid_19_daily_reports")
