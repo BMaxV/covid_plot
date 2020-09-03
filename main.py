@@ -76,6 +76,7 @@ def plot21(new_dates,yn,diffs,my_country,save):
         plt.show()
 
 def calculate_averages(diffs,last_x_days):
+    two_day_averages=averages(diffs,last_x_days,2)
     one_week_averages=averages(diffs,last_x_days,7)
     two_week_averages=averages(diffs,last_x_days,14)
     three_week_averages=averages(diffs,last_x_days,21)
@@ -84,11 +85,11 @@ def calculate_averages(diffs,last_x_days):
     two_week_averages=two_week_averages[-last_x_days:]
     three_week_averages=three_week_averages[-last_x_days:]
     
-    return one_week_averages,two_week_averages,three_week_averages
+    return two_day_averages,one_week_averages,two_week_averages,three_week_averages
 
 def plot22(new_dates,all_averages,diffs,my_country,last_x_days,save):
     
-    [one_week_averages,two_week_averages,three_week_averages]=all_averages
+    [two_day_averages,one_week_averages,two_week_averages,three_week_averages]=all_averages
         
     fig, ax = plt.subplots()
     #plt.plot(new_dates,yn,label="total")
@@ -97,12 +98,14 @@ def plot22(new_dates,all_averages,diffs,my_country,last_x_days,save):
     #plt.plot([new_dates[0],new_dates[-1]],[three_week_avg,three_week_avg],label="three week avg diffs")
     
     #modify the dates a bit so they're more accurately displayed
+    new_d_d2=new_dates[-last_x_days-1:-1]
     new_d_w1=new_dates[-last_x_days-3:-3]
     new_d_w2=new_dates[-last_x_days-7:-7]
     new_d_w3=new_dates[-last_x_days-10:-10]
+    plt.plot(new_d_d2,two_day_averages,label="two day avg diffs")
     plt.plot(new_d_w1,one_week_averages,label="one week avg diffs")
     plt.plot(new_d_w2,two_week_averages,label="two week avg diffs")
-    plt.plot(new_d_w3,three_week_averages,label="three week avg diffs")
+    #plt.plot(new_d_w3,three_week_averages,label="three week avg diffs")
     plt.legend()
     
     my_ticks=plt.xticks()
@@ -211,10 +214,10 @@ def plot3(data_d,country_list,last_x_days,save=True):
             plt.show()
         c+=1
 
-def main2(last_x_days=80):
+def main2(last_x_days=170):
     data_d=read_data2()
     
-    country_list=["Germany","Italy","India","Iran","Sweden","United Kingdom"]
+    country_list=["Germany","Belgium","Italy","India","Iran","Sweden","United Kingdom"]
     #side effect, plot writes diffs to data_d
     for x in country_list:
         plot2(data_d,x,last_x_days=last_x_days)
